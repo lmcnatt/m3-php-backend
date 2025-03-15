@@ -4,9 +4,15 @@ namespace App\Http\Controllers\API;
    
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Mail\ForgotPassword;
+use App\Mail\PasswordReset;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
    
 class RegisterController extends BaseController
 {
@@ -54,5 +60,64 @@ class RegisterController extends BaseController
     $success['id'] =  $request->id;
 
     return $this->sendResponse($success, 'User logout successfully. Token cleared.');
+  }
+
+  public function forgotPassword(Request $request) {
+    $validator = Validator::make($request->all(), [
+      'email' => 'required|email|exists:users,email|min:3',
+    ]);
+
+    $success = [];
+    if($validator->fails()){
+      return $this->sendResponse($success, '--Check your email for password reset link.');
+    }
+
+    $user = User::where('email', $request->email)->first();
+    $user = User::findOrFail($user->id);
+    $user->remember_token = Str::random(30);
+    $user->save();
+
+    Mail::to($user->email)->send(new ForgotPassword($user));
+
+    $success['remember_token'] = $user->remember_token;
+    return $this->sendResponse($success, '++Check your email for password reset link.');
+  }
+
+  public function passwordReset(Request $request) {
+    $validator = Validator::make($request->all(), [
+      'remember_token' => 'required',
+      'setPassword' => 'nullable|string',
+    ]);
+
+    if($validator->fails()){
+      return $this->sendResponse([], 'Check your email for password reset link.');
+    }
+
+    $remember_token = $request['remember_token'];
+    if(!$remember_token){
+      return $this->sendError('Token Expired or Incorrect.', ['error' => 'Token Expired or Incorrect.']);
+    }
+    
+    $user = User::where('remember_token', $remember_token)->first();
+    if(!$user){
+      return $this->sendError('Token Expired or Incorrect.', ['error' => 'Token Expired or Incorrect.']);
+    }
+
+    $user = User::find($user->id);
+    $newPassword = $request['setPassword'];
+    if(!$request['setPassword']){
+      $newPassword = Str::random(8);
+    }
+
+    $user->password = password_hash($newPassword, PASSWORD_BCRYPT);
+    $user->remember_token = null;
+    $user->save();
+
+    if($request['setPassword']){
+      return $this->sendResponse([], 'Password reset successfully.');
+    }
+    Mail::to($user->email)->send(new PasswordReset($newPassword));
+
+    return 'Password reset successfully. Check your email for temporary password.';
   }
 }
