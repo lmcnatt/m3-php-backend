@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function(): void{
         Route::post('user/change_email', 'changeEmail');
     });
 
+    Route::resource('lesson', LessonController::class);
     Route::controller(LessonController::class)->group(function(): void {
         Route::get('lesson', 'listMyLessons');
         Route::get('lesson/{id}', 'getLesson');
