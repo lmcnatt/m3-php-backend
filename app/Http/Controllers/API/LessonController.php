@@ -19,6 +19,7 @@ class LessonController extends BaseController
         
         $lessons = Lesson::where('student1_id', $user->id)
             ->orWhere('student2_id', $user->id)
+            ->with(['student1', 'student2', 'coach'])
             ->orderBy('lesson_date', 'desc')
             ->get();
 

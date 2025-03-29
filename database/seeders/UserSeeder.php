@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'name' => 'Logan McNatt',
+                'avatar' => 'images/1743268484_1.jpg',
                 'email' => 'logan.m.mcnatt@gmail.com',
                 'email_verified_at' => null,
                 'password' => bcrypt('1234asdf'),
@@ -25,6 +26,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Leah McNatt',
+                'avatar' => 'images/1743268510_2.jpg',
                 'email' => '13leah.rose@gmail.com',
                 'email_verified_at' => null,
                 'password' => bcrypt('asdf1234'),
@@ -33,6 +35,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Shanden Hoffman',
+                'avatar' => 'images/1743268536_3.jpg',
                 'email' => 'shandenhoffman@email.com',
                 'email_verified_at' => null,
                 'password' => bcrypt('asdf1234'),
@@ -41,6 +44,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Natalie Jolley',
+                'avatar' => 'images/1743268553_4.jpeg',
                 'email' => 'nataliejolley@email.com',
                 'email_verified_at' => null,
                 'password' => bcrypt('asdf1234'),
