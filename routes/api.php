@@ -25,14 +25,14 @@ Route::middleware('auth:sanctum')->group(function(): void{
         Route::post('user/change_email', 'changeEmail');
     });
 
-    Route::resource('lesson', LessonController::class);
+    Route::resource('lessons', LessonController::class);
     Route::controller(LessonController::class)->group(function(): void {
-        Route::get('lesson', 'listMyLessons');
-        Route::get('lesson/{id}', 'getLesson');
-        Route::post('lesson', 'createLesson');
-        Route::post('lesson/upload_video', 'uploadLessonVideo');
-        Route::put('lesson/{id}', 'updateLessonVideo');
-        Route::delete('lesson/{id}', 'deleteLessonVideo');
-        Route::delete('lesson/{id}', 'deleteLesson');
+        Route::get('lessons', 'listMyLessons');
+        Route::get('lessons/{id}', 'getLesson');
+        Route::post('lessons', 'createLesson');
+        Route::post('lessons/upload_video', 'uploadLessonVideo');
+        Route::put('lessons/{id}', 'updateLessonVideo');
+        Route::delete('lessons/{id}', 'deleteLessonVideo');
+        Route::delete('lessons/{id}', 'deleteLesson');
     });
 });
