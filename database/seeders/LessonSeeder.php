@@ -32,6 +32,7 @@ class LessonSeeder extends Seeder
                 'notes' => 'Learned basic waltz box step and natural turn. Need to work on posture and frame.',
                 'dance_style' => 'Smooth',
                 'lesson_date' => Carbon::now()->subDays(14),
+                'video' => 'videos/Waltz Fix.mp4',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -43,6 +44,7 @@ class LessonSeeder extends Seeder
                 'notes' => 'Focused on Cuban motion and correct timing for basic steps. Homework: practice hip action.',
                 'dance_style' => 'Rhythm',
                 'lesson_date' => Carbon::now()->subDays(7),
+                'video' => 'videos/Cha Cha.mp4',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -54,6 +56,7 @@ class LessonSeeder extends Seeder
                 'notes' => 'Worked on tango walk, staccato movement, and head position. Need to maintain connection with partner.',
                 'dance_style' => 'Ballroom',
                 'lesson_date' => Carbon::now()->subDays(3),
+                'video' => 'videos/Tango.mp4',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -65,6 +68,7 @@ class LessonSeeder extends Seeder
                 'notes' => 'Reviewed Cuban walks and sliding doors. Focus on weight transfers and hip rotation.',
                 'dance_style' => 'Latin',
                 'lesson_date' => Carbon::now()->subDay(),
+                'video' => 'videos/Rumba.mp4',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -76,6 +80,7 @@ class LessonSeeder extends Seeder
                 'notes' => 'Introduced natural turn and quarter turn. Need to work on maintaining bounce and drive.',
                 'dance_style' => 'Ballroom',
                 'lesson_date' => Carbon::now(),
+                'video' => 'videos/Quickstep.mp4',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

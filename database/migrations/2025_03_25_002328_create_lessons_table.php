@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('notes');
             $table->string('dance_style');
             $table->date('lesson_date');
+            $table->string('video')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

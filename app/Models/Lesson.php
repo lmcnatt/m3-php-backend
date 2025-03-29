@@ -24,6 +24,7 @@ class Lesson extends Model
         'notes',
         'dance_style',
         'lesson_date',
+        'video',
     ];
 
     /**

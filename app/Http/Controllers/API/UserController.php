@@ -47,7 +47,7 @@ class UserController extends BaseController
         }
     }
 
-    public function removeAvatar(){
+    public function removeAvatar() {
         $authUser = Auth::user();
         $user = User::findOrFail($authUser->id);
         Storage::disk('s3')->delete($user->avatar);
