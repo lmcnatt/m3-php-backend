@@ -14,51 +14,67 @@ class LessonSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get the user ID to associate with lessons
-        $userId = User::where('email', 'logan.m.mcnatt@gmail.com')->first()->id;
+        // Get the primary student ID
+        $student1Id = User::where('email', 'logan.m.mcnatt@gmail.com')->first()->id;
+        
+        // Get Leah McNatt as student2
+        $student2Id = User::where('email', '13leah.rose@gmail.com')->first()->id;
+        
+        // Get coaches
+        $coaches = User::whereIn('email', ['shandenhoffman@email.com', 'nataliejolley@email.com'])->get();
         
         $lessons = [
             [
-                'user_id' => $userId,
+                'student1_id' => $student1Id,
+                'student2_id' => null,
+                'coach_id' => $coaches->random()->id,
                 'title' => 'Introduction to Waltz',
                 'notes' => 'Learned basic waltz box step and natural turn. Need to work on posture and frame.',
-                'dance_style' => 'Waltz',
+                'dance_style' => 'Smooth',
                 'lesson_date' => Carbon::now()->subDays(14),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'user_id' => $userId,
+                'student1_id' => $student1Id,
+                'student2_id' => $student2Id,
+                'coach_id' => $coaches->random()->id,
                 'title' => 'Cha-Cha Timing',
                 'notes' => 'Focused on Cuban motion and correct timing for basic steps. Homework: practice hip action.',
-                'dance_style' => 'Cha-Cha',
+                'dance_style' => 'Rhythm',
                 'lesson_date' => Carbon::now()->subDays(7),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'user_id' => $userId,
+                'student1_id' => $student1Id,
+                'student2_id' => null,
+                'coach_id' => $coaches->random()->id,
                 'title' => 'Tango Fundamentals',
                 'notes' => 'Worked on tango walk, staccato movement, and head position. Need to maintain connection with partner.',
-                'dance_style' => 'Tango',
+                'dance_style' => 'Ballroom',
                 'lesson_date' => Carbon::now()->subDays(3),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'user_id' => $userId,
+                'student1_id' => $student1Id,
+                'student2_id' => $student2Id,
+                'coach_id' => $coaches->random()->id,
                 'title' => 'Rumba Technique',
                 'notes' => 'Reviewed Cuban walks and sliding doors. Focus on weight transfers and hip rotation.',
-                'dance_style' => 'Rumba',
+                'dance_style' => 'Latin',
                 'lesson_date' => Carbon::now()->subDay(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'user_id' => $userId,
+                'student1_id' => $student1Id,
+                'student2_id' => null,
+                'coach_id' => $coaches->random()->id,
                 'title' => 'Quickstep Basics',
                 'notes' => 'Introduced natural turn and quarter turn. Need to work on maintaining bounce and drive.',
-                'dance_style' => 'Quickstep',
+                'dance_style' => 'Ballroom',
                 'lesson_date' => Carbon::now(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

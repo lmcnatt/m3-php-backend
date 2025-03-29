@@ -17,7 +17,9 @@ class Lesson extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
+        'student1_id',
+        'student2_id',
+        'coach_id',
         'title',
         'notes',
         'dance_style',
@@ -37,10 +39,26 @@ class Lesson extends Model
     ];
 
     /**
-     * Get the user that owns the lesson.
+     * Get the primary student for the lesson.
      */
-    public function user(): BelongsTo
+    public function student1(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'student1_id');
+    }
+
+    /**
+     * Get the secondary student for the lesson (if it's a partner lesson).
+     */
+    public function student2(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'student2_id');
+    }
+
+    /**
+     * Get the coach for the lesson.
+     */
+    public function coach(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'coach_id');
     }
 }

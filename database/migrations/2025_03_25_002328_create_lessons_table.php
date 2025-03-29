@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('student1_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('student2_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('coach_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('title');
             $table->text('notes');
             $table->string('dance_style');
