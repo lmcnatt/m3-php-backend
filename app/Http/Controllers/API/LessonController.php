@@ -16,14 +16,12 @@ class LessonController extends BaseController
      */
     public function index()
     {
-        $lessons = Lesson::with(['DanceStyle', 'Dance'])->get();
-
         $authUser = Auth::user();
         $user = User::findOrFail($authUser->id);
         
         $lessons = Lesson::where('student1_id', $user->id)
             ->orWhere('student2_id', $user->id)
-            ->with(['student1', 'student2', 'coach'])
+            ->with(['student1', 'student2', 'coach', 'danceStyle.dances'])
             ->orderBy('lesson_date', 'desc')
             ->get();
 
@@ -57,7 +55,7 @@ class LessonController extends BaseController
                 $query->where('student1_id', $studentId)
                       ->orWhere('student2_id', $studentId);
             })
-            ->with(['student1', 'student2', 'coach'])
+            ->with(['student1', 'student2', 'coach', 'danceStyle.dances'])
             ->orderBy('lesson_date', 'desc')
             ->get();
 
@@ -146,7 +144,7 @@ class LessonController extends BaseController
     public function getLesson(string $id)
     {
         $authUser = Auth::user();
-        $lesson = Lesson::with(['student1', 'student2', 'coach'])->findOrFail($id);
+        $lesson = Lesson::with(['student1', 'student2', 'coach', 'danceStyle.dances'])->findOrFail($id);
         
         // Check if user is authorized to view this lesson
         if ($lesson->student1_id != $authUser->id && $lesson->student2_id != $authUser->id && $lesson->coach_id != $authUser->id) {
