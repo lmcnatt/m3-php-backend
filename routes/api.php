@@ -27,12 +27,7 @@ Route::middleware('auth:sanctum')->group(function(): void{
 
     Route::resource('lessons', LessonController::class);
     Route::controller(LessonController::class)->group(function(): void {
-        Route::get('lessons', 'listMyLessons');
-        Route::get('lessons/{id}', 'getLesson');
-        Route::post('lessons', 'createLesson');
-        Route::post('lessons/upload_video', 'uploadLessonVideo');
-        Route::put('lessons/{id}', 'updateLessonVideo');
-        Route::delete('lessons/{id}', 'deleteLessonVideo');
-        Route::delete('lessons/{id}', 'deleteLesson');
+        Route::put('lessons/{id}/update_video', 'updateLessonVideo');
+        Route::delete('lessons/{id}/delete_video', 'deleteLessonVideo');
     });
 });

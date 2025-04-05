@@ -7,13 +7,14 @@ use App\Models\Lesson;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class LessonController extends BaseController
 {
     /**
      * Display a listing of the user's lessons.
      */
-    public function listMyLessons()
+    public function index()
     {
         $authUser = Auth::user();
         $user = User::findOrFail($authUser->id);
@@ -71,57 +72,70 @@ class LessonController extends BaseController
     /**
      * Create a new lesson resource.
      */
-    public function createLesson(Request $request)
+    public function store(Request $request)
     {
         $authUser = Auth::user();
         
         // Validate the request
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'coach_id' => 'required|exists:users,id',
             'student2_id' => 'nullable|exists:users,id',
-            'title' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-            'dance_style' => 'required|string|max:255',
-            'dance' => 'required|string|max:255',
-            'lesson_date' => 'required|date',
+            'title' => 'required',
+            'notes' => 'nullable',
+            'dance_style' => 'required',
+            'dance' => 'required',
+            'lesson_date' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors());
+        }
         
         // Create new lesson
         $lesson = new Lesson();
-        $lesson->student1_id = $authUser->id;
-        $lesson->student2_id = $request->student2_id;
-        $lesson->coach_id = $request->coach_id;
-        $lesson->title = $request->title;
-        $lesson->notes = $request->notes;
-        $lesson->dance_style = $request->dance_style;
-        $lesson->dance = $request->dance;
-        $lesson->lesson_date = $request->lesson_date;
-        $lesson->save();
         
         // Handle video upload if file is present
         if ($request->hasFile('video')) {
-            // Create a new request with the lesson ID
-            $videoRequest = new Request();
-            $videoRequest->merge(['lesson_id' => $lesson->id]);
-            $videoRequest->files->add(['video' => $request->file('video')]);
-            
-            // Use the existing uploadLessonVideo method
-            $response = $this->uploadLessonVideo($videoRequest);
-            $responseData = json_decode($response->getContent(), true);
-            
-            // If video upload failed, return error
-            if (!$responseData['success']) {
-                return $response;
-            }
-            
-            // Update the lesson with the video URL for response
-            $lesson->refresh();
+            // Delete the old video if exists
             if ($lesson->video) {
-                $lesson->video = $this->getS3Url($lesson->video);
+                Storage::disk('s3')->delete($lesson->video);
             }
+            
+            $extension = request()->file('video')->getClientOriginalExtension();
+            $video_name = time() . '_' . $lesson->id . '.' . $extension;
+            
+            $path = $request->file('video')->storeAs(
+                'videos',
+                $video_name,
+                's3'
+            );
+            
+            Storage::disk('s3')->setVisibility($path, "public");
+            
+            if(!$path) {
+                return $this->sendError($path, 'Lesson video failed to update!');
+            }
+            
+            $lesson->video = $path;
         }
+
+        $lesson->student1_id = $authUser->id;
+        $lesson->student2_id = $request['student2_id'];
+        $lesson->coach_id = $request['coach_id'];
+        $lesson->title = $request['title'];
+        $lesson->notes = $request['notes'];
+        $lesson->dance_style = $request['dance_style'];
+        $lesson->dance = $request['dance'];
+        $lesson->lesson_date = $request['lesson_date'];
+
+        $lesson->save();
         
-        return $this->sendResponse($lesson, 'Lesson created successfully');
+        if (isset($lesson->video)) {
+            $lesson->video = $this->getS3Url($lesson->video);
+        }
+
+        $success['lesson'] = $lesson;
+        return $this->sendResponse($success, 'Lesson created successfully');
     }
 
     /**
@@ -148,7 +162,7 @@ class LessonController extends BaseController
     /**
      * Update the specified lesson resource.
      */
-    public function editLesson(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $authUser = Auth::user();
         $lesson = Lesson::findOrFail($id);
@@ -159,93 +173,58 @@ class LessonController extends BaseController
         }
         
         // Validate the request
-        $request->validate([
-            'coach_id' => 'sometimes|exists:users,id',
-            'student1_id' => 'sometimes|exists:users,id',
-            'student2_id' => 'sometimes|nullable|exists:users,id',
-            'title' => 'sometimes|string|max:255',
-            'notes' => 'sometimes|nullable|string',
-            'dance_style' => 'sometimes|string|max:255',
-            'dance' => 'sometimes|string|max:255',
-            'lesson_date' => 'sometimes|date',
+        $validator = Validator::make($request->all(), [
+            'coach_id' => 'required|exists:users,id',
+            'student1_id' => 'required|exists:users,id',
+            'student2_id' => 'nullable|exists:users,id',
+            'title' => 'required',
+            'notes' => 'nullable',
+            'dance_style' => 'required',
+            'dance' => 'required',
+            'lesson_date' => 'required',
         ]);
-        
-        // Handle video upload if file is present
-        if ($request->hasFile('video')) {
-            // Create a new request with the lesson ID
-            $videoRequest = new Request();
-            $videoRequest->merge(['lesson_id' => $id]);
-            $videoRequest->files->add(['video' => $request->file('video')]);
-            
-            // Use the existing uploadLessonVideo method
-            $response = $this->uploadLessonVideo($videoRequest);
-            $responseData = json_decode($response->getContent(), true);
-            
-            // If video upload failed, return error
-            if (!$responseData['success']) {
-                return $response;
-            }
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors());
         }
         
-        // Update student fields with authorization rules
-        if ($request->has('student1_id') && $authUser->id === $lesson->student2_id) {
-            $lesson->student1_id = $request->student1_id;
-        } elseif ($request->has('student2_id') && $authUser->id === $lesson->student1_id) {
-            $lesson->student2_id = $request->student2_id;
-        }
-        
-        // Update coach_id if present
-        if ($request->has('coach_id')) {
-            $lesson->coach_id = $request->coach_id;
-        }
-        
-        // Update other fields if present
-        if ($request->has('title')) {
-            $lesson->title = $request->title;
-        }
-        
-        if ($request->has('notes')) {
-            $lesson->notes = $request->notes;
-        }
-        
-        if ($request->has('dance_style')) {
-            $lesson->dance_style = $request->dance_style;
-        }
-        
-        if ($request->has('dance')) {
-            $lesson->dance = $request->dance;
-        }
-        
-        if ($request->has('lesson_date')) {
-            $lesson->lesson_date = $request->lesson_date;
-        }
+        $lesson->coach_id = $request['coach_id'];
+        $lesson->student1_id = $request['student1_id'];
+        $lesson->student2_id = $request['student2_id'];
+        $lesson->title = $request['title'];
+        $lesson->notes = $request['notes'];
+        $lesson->dance_style = $request['dance_style'];
+        $lesson->dance = $request['dance'];
+        $lesson->lesson_date = $request['lesson_date'];
         
         $lesson->save();
         
-        // Refresh the lesson to get updated data including video
-        $lesson->refresh();
-        
         // Add S3 URL for video if it exists
-        if ($lesson->video) {
+        if (isset($lesson->video)) {
             $lesson->video = $this->getS3Url($lesson->video);
         }
         
-        return $this->sendResponse($lesson, 'Lesson updated successfully');
+        $success['lesson'] = $lesson;
+        return $this->sendResponse($success, 'Lesson updated successfully');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function uploadLessonVideo(Request $request)
+    public function updateLessonVideo(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'video' => 'required|mimes:mp4,mov,avi,wmv|max:102400',
-            'lesson_id' => 'required|exists:lessons,id'
         ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors());
+        }
+
+        $lesson = Lesson::findOrFail($id);
 
         if ($request->hasFile('video')) {
             $authUser = Auth::user();
-            $lesson = Lesson::findOrFail($request->lesson_id);
             
             // Check if user is authorized to upload to this lesson
             if ($lesson->student1_id != $authUser->id && $lesson->student2_id != $authUser->id && $lesson->coach_id != $authUser->id) {
@@ -253,7 +232,7 @@ class LessonController extends BaseController
             }
             
             $extension = request()->file('video')->getClientOriginalExtension();
-            $video_name = time() . '_' . $request->lesson_id . '.' . $extension;
+            $video_name = time() . '_' . $lesson->id . '.' . $extension;
             
             $path = $request->file('video')->storeAs(
                 'videos',
@@ -268,66 +247,20 @@ class LessonController extends BaseController
             }
             
             // Delete old video if exists
-            if ($lesson->video) {
-                Storage::disk('s3')->delete($lesson->video);
-            }
+            // if ($lesson->video) {
+            //     Storage::disk('s3')->delete($lesson->video);
+            // }
             
             $lesson->video = $path;
-            $lesson->save();
-            
-            $success['video'] = $this->getS3Url($path);
-            return $this->sendResponse($success, 'Lesson video uploaded successfully!');
         }
+        $lesson->save();
         
-        return $this->sendError('Upload failed', 'No video file was provided');
-    }
+        if (isset($lesson->video)) {
+            $lesson->video = $this->getS3Url($lesson->video);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function updateLessonVideo(Request $request, string $id)
-    {
-        $request->validate([
-            'video' => 'required|mimes:mp4,mov,avi,wmv|max:102400',
-        ]);
-
-        $authUser = Auth::user();
-        $lesson = Lesson::findOrFail($id);
-        
-        // Check if user is authorized to update this lesson
-        if ($lesson->student1_id != $authUser->id && $lesson->student2_id != $authUser->id && $lesson->coach_id != $authUser->id) {
-            return $this->sendError('Unauthorized', 'You are not authorized to update videos for this lesson', 403);
-        }
-        
-        if ($request->hasFile('video')) {
-            // Delete the old video if exists
-            if ($lesson->video) {
-                Storage::disk('s3')->delete($lesson->video);
-            }
-            
-            $extension = request()->file('video')->getClientOriginalExtension();
-            $video_name = time() . '_' . $id . '.' . $extension;
-            
-            $path = $request->file('video')->storeAs(
-                'videos',
-                $video_name,
-                's3'
-            );
-            
-            Storage::disk('s3')->setVisibility($path, "public");
-            
-            if(!$path) {
-                return $this->sendError($path, 'Lesson video failed to update!');
-            }
-            
-            $lesson->video = $path;
-            $lesson->save();
-            
-            $success['video'] = $this->getS3Url($path);
-            return $this->sendResponse($success, 'Lesson video updated successfully!');
-        }
-        
-        return $this->sendError('Update failed', 'No video file was provided');
+        $success['lesson'] = $lesson;
+        return $this->sendResponse($success, 'Lesson video uploaded successfully!');
     }
 
     /**
@@ -357,7 +290,7 @@ class LessonController extends BaseController
     /**
      * Remove the specified lesson and associated video if present.
      */
-    public function deleteLesson(string $id)
+    public function destroy($id)
     {
         $authUser = Auth::user();
         $lesson = Lesson::findOrFail($id);
@@ -375,6 +308,7 @@ class LessonController extends BaseController
         // Delete the lesson
         $lesson->delete();
         
-        return $this->sendResponse(null, 'Lesson deleted successfully');
+        $success['lesson']['id'] = $id;
+        return $this->sendResponse($success, 'Lesson deleted successfully');
     }
 }
