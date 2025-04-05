@@ -22,8 +22,7 @@ class Lesson extends Model
         'coach_id',
         'title',
         'notes',
-        'dance_style',
-        'dance',
+        'dance_id',
         'lesson_date',
         'video',
     ];
@@ -65,18 +64,10 @@ class Lesson extends Model
     }
 
     /**
-     * Get the dance style for the lesson.
-     */
-    public function danceStyle(): BelongsTo
-    {
-        return $this->belongsTo(DanceStyle::class, 'dance_style_id');
-    }
-
-    /**
      * Get the dance for the lesson.
      */
     public function dance(): BelongsTo
     {
-        return $this->belongsTo(Dance::class, 'dance_id');
+        return $this->belongsTo(Dance::class);
     }
 }

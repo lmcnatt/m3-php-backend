@@ -21,7 +21,7 @@ class LessonController extends BaseController
         
         $lessons = Lesson::where('student1_id', $user->id)
             ->orWhere('student2_id', $user->id)
-            ->with(['student1', 'student2', 'coach', 'danceStyle.dances'])
+            ->with(['student1', 'student2', 'coach', 'dance'])
             ->orderBy('lesson_date', 'desc')
             ->get();
 
@@ -55,7 +55,7 @@ class LessonController extends BaseController
                 $query->where('student1_id', $studentId)
                       ->orWhere('student2_id', $studentId);
             })
-            ->with(['student1', 'student2', 'coach', 'danceStyle.dances'])
+            ->with(['student1', 'student2', 'coach', 'dance'])
             ->orderBy('lesson_date', 'desc')
             ->get();
 
@@ -82,7 +82,6 @@ class LessonController extends BaseController
             'student2_id' => 'nullable|exists:users,id',
             'title' => 'required',
             'notes' => 'nullable',
-            'dance_style_id' => 'required',
             'dance_id' => 'required',
             'lesson_date' => 'required',
         ]);
@@ -124,7 +123,6 @@ class LessonController extends BaseController
         $lesson->coach_id = $request['coach_id'];
         $lesson->title = $request['title'];
         $lesson->notes = $request['notes'];
-        $lesson->dance_style_id = $request['dance_style_id'];
         $lesson->dance_id = $request['dance_id'];
         $lesson->lesson_date = $request['lesson_date'];
 
@@ -144,7 +142,7 @@ class LessonController extends BaseController
     public function getLesson(string $id)
     {
         $authUser = Auth::user();
-        $lesson = Lesson::with(['student1', 'student2', 'coach', 'danceStyle.dances'])->findOrFail($id);
+        $lesson = Lesson::with(['student1', 'student2', 'coach', 'dance'])->findOrFail($id);
         
         // Check if user is authorized to view this lesson
         if ($lesson->student1_id != $authUser->id && $lesson->student2_id != $authUser->id && $lesson->coach_id != $authUser->id) {
@@ -179,7 +177,6 @@ class LessonController extends BaseController
             'student2_id' => 'nullable|exists:users,id',
             'title' => 'required',
             'notes' => 'nullable',
-            'dance_style_id' => 'required',
             'dance_id' => 'required',
             'lesson_date' => 'required',
         ]);
@@ -193,7 +190,6 @@ class LessonController extends BaseController
         $lesson->student2_id = $request['student2_id'];
         $lesson->title = $request['title'];
         $lesson->notes = $request['notes'];
-        $lesson->dance_style_id = $request['dance_style_id'];
         $lesson->dance_id = $request['dance_id'];
         $lesson->lesson_date = $request['lesson_date'];
         

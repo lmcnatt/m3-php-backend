@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('coach_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('title');
             $table->text('notes');
-            $table->foreignId('dance_style_id')->constrained('dance_styles')->onDelete('cascade');
             $table->foreignId('dance_id')->constrained('dances')->onDelete('cascade');
             $table->date('lesson_date');
             $table->string('video')->nullable();

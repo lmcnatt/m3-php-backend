@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dance extends Model
 {
@@ -17,7 +17,6 @@ class Dance extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'dance_style_id',
         'dance',
     ];
 
@@ -32,8 +31,8 @@ class Dance extends Model
         'deleted_at' => 'datetime',
     ];
 
-    public function danceStyle(): BelongsTo
+    public function lessons(): HasMany
     {
-        return $this->belongsTo(DanceStyle::class);
+        return $this->hasMany(Lesson::class);
     }
 }

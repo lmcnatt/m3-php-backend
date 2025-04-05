@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('dances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('dance_style_id')->constrained('dance_styles')->onDelete('cascade');
             $table->string('dance');
             $table->timestamps();
             $table->softDeletes();
