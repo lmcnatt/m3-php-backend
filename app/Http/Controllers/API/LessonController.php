@@ -82,8 +82,8 @@ class LessonController extends BaseController
             'student2_id' => 'nullable|exists:users,id',
             'title' => 'required',
             'notes' => 'nullable',
-            'dance_style' => 'required',
-            'dance' => 'required',
+            'dance_style_id' => 'required',
+            'dance_id' => 'required',
             'lesson_date' => 'required',
         ]);
 
@@ -124,8 +124,8 @@ class LessonController extends BaseController
         $lesson->coach_id = $request['coach_id'];
         $lesson->title = $request['title'];
         $lesson->notes = $request['notes'];
-        $lesson->dance_style = $request['dance_style'];
-        $lesson->dance = $request['dance'];
+        $lesson->dance_style_id = $request['dance_style_id'];
+        $lesson->dance_id = $request['dance_id'];
         $lesson->lesson_date = $request['lesson_date'];
 
         $lesson->save();
@@ -179,8 +179,8 @@ class LessonController extends BaseController
             'student2_id' => 'nullable|exists:users,id',
             'title' => 'required',
             'notes' => 'nullable',
-            'dance_style' => 'required',
-            'dance' => 'required',
+            'dance_style_id' => 'required',
+            'dance_id' => 'required',
             'lesson_date' => 'required',
         ]);
 
@@ -193,8 +193,8 @@ class LessonController extends BaseController
         $lesson->student2_id = $request['student2_id'];
         $lesson->title = $request['title'];
         $lesson->notes = $request['notes'];
-        $lesson->dance_style = $request['dance_style'];
-        $lesson->dance = $request['dance'];
+        $lesson->dance_style_id = $request['dance_style_id'];
+        $lesson->dance_id = $request['dance_id'];
         $lesson->lesson_date = $request['lesson_date'];
         
         $lesson->save();
