@@ -35,4 +35,9 @@ class DanceStyle extends Model
     {
         return $this->hasMany(Dance::class);
     }
+
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

@@ -63,4 +63,20 @@ class Lesson extends Model
     {
         return $this->belongsTo(User::class, 'coach_id');
     }
+
+    /**
+     * Get the dance style for the lesson.
+     */
+    public function danceStyle(): BelongsTo
+    {
+        return $this->belongsTo(DanceStyle::class, 'dance_style_id');
+    }
+
+    /**
+     * Get the dance for the lesson.
+     */
+    public function dance(): BelongsTo
+    {
+        return $this->belongsTo(Dance::class, 'dance_id');
+    }
 }

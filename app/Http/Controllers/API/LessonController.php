@@ -16,6 +16,8 @@ class LessonController extends BaseController
      */
     public function index()
     {
+        $lessons = Lesson::with(['DanceStyle', 'Dance'])->get();
+
         $authUser = Auth::user();
         $user = User::findOrFail($authUser->id);
         
