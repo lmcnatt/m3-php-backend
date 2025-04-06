@@ -18,6 +18,17 @@ class UserController extends BaseController
         return $this->sendResponse($user, 'User');
     }
 
+    public function getAllUsers() {
+        $users = User::all();
+        // Process avatars for each user if needed
+        foreach ($users as $user) {
+            if ($user->avatar) {
+                $user->avatar = $this->getS3Url($user->avatar);
+            }
+        }
+        return $this->sendResponse($users, 'All Users');
+    }
+
     public function uploadAvatar(Request $request){
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',

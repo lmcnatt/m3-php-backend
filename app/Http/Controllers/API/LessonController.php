@@ -96,9 +96,9 @@ class LessonController extends BaseController
         // Handle video upload if file is present
         if ($request->hasFile('video')) {
             // Delete the old video if exists
-            if ($lesson->video) {
-                Storage::disk('s3')->delete($lesson->video);
-            }
+            // if ($lesson->video) {
+            //     Storage::disk('s3')->delete($lesson->video);
+            // }
             
             $extension = request()->file('video')->getClientOriginalExtension();
             $video_name = time() . '_' . $lesson->id . '.' . $extension;
