@@ -1,0 +1,1 @@
+Your temporary password is <strong>{{ $newPassword }}</strong>

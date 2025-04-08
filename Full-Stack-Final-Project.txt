@@ -1,0 +1,13 @@
+RhythmNotes Proposal
+RhythmNotes is a website that will aid ballroom dance coaches and students in creating lesson plans and recording lesson notes. As with any good scrum project, this app has many features that will be built eventually, but the MVP for this class will include just users, lessons, and dance styles.
+The main entity for this project is the User, representing individuals who participate in ballroom dance, either as students, coaches, or both. Users can log into the system to manage their dance-related activities, including tracking lessons, managing partnerships, and organizing their coaching relationships. Each user can have multiple roles, allowing them to function as both a student and a coach within the system.
+There are no 1:1 relationships in this application. The only idea I could come up with is a user having a separate profile, but then that didn't make sense since that information could just be stored in the user table instead and simplify the design.
+A one-to-many (1:*) relationship exists between a User and their Lessons. Each user (as a student) can have multiple lessons, but each lesson is linked to a single student, or in the case that it is a partnership is having the lesson, linked to both partners.
+A many-to-many (*:*) relationship exists between Users in the form of Partnerships and CoachingRelationships. A user can have multiple dance partners, and each partnership specifies the styles in which they dance together. Likewise, a user can have multiple coaches, and each coach can train multiple students.
+
+Business Justification for Executive Management
+RhythmNotes, a ballroom dance coaching app, makes it easier for dancers, coaches, and partnerships to keep track of their lessons and training. Users can log notes, track progress, and schedule lessons, which helps students and coaches stay on the same page. Instead of dealing with messy paper notes or trying to remember lesson details, everything is stored in one place. The app also makes it simple to manage coaching relationships and dance partnerships by keeping track of who trains with whom and in what styles. Dance studios and independent coaches can use this system to stay organized, manage their students, and keep track of lesson history. By using this software, training becomes more efficient, students stay more engaged, and the ballroom dance community can collaborate more smoothly. Future iterations will enable calendar features, partnership searches, and cross-studio collaboration.
+
+
+Logan McNatt
+
