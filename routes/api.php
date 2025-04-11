@@ -31,6 +31,6 @@ Route::middleware('auth:sanctum')->group(function(): void{
 
     Route::resource('lessons', LessonController::class);
     Route::controller(LessonController::class)->group(function(): void {
-        Route::put('lessons/{id}/update_lesson_video', 'updateLessonVideo');
+        Route::post('lessons/{id}/update_lesson_video', 'updateLessonVideo');
     });
 });
