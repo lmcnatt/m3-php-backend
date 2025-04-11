@@ -127,12 +127,14 @@ class LessonController extends BaseController
         $lesson->lesson_date = $request['lesson_date'];
 
         $lesson->save();
+
+        $responseLesson = Lesson::where('id', $lesson->id)->with(['student1', 'student2', 'coach', 'dance'])->first();
         
-        if (isset($lesson->video)) {
-            $lesson->video = $this->getS3Url($lesson->video);
+        if (isset($responseLesson->video)) {
+            $responseLesson->video = $this->getS3Url($responseLesson->video);
         }
 
-        $success['lesson'] = $lesson;
+        $success['lesson'] = $responseLesson;
         return $this->sendResponse($success, 'Lesson created successfully');
     }
 
@@ -195,12 +197,13 @@ class LessonController extends BaseController
         
         $lesson->save();
         
-        // Add S3 URL for video if it exists
-        if (isset($lesson->video)) {
-            $lesson->video = $this->getS3Url($lesson->video);
-        }
+        $responseLesson = Lesson::where('id', $lesson->id)->with(['student1', 'student2', 'coach', 'dance'])->first();
         
-        $success['lesson'] = $lesson;
+        if (isset($responseLesson->video)) {
+            $responseLesson->video = $this->getS3Url($responseLesson->video);
+        }
+
+        $success['lesson'] = $responseLesson;
         return $this->sendResponse($success, 'Lesson updated successfully');
     }
 
@@ -250,13 +253,15 @@ class LessonController extends BaseController
             $lesson->video = $path;
         }
         $lesson->save();
+
+        $responseLesson = Lesson::where('id', $lesson->id)->with(['student1', 'student2', 'coach', 'dance'])->first();
         
-        if (isset($lesson->video)) {
-            $lesson->video = $this->getS3Url($lesson->video);
+        if (isset($responseLesson->video)) {
+            $responseLesson->video = $this->getS3Url($responseLesson->video);
         }
 
-        $success['lesson'] = $lesson;
-        return $this->sendResponse($success, 'Lesson video uploaded successfully!');
+        $success['lesson'] = $responseLesson;
+        return $this->sendResponse($success, 'Lesson video updated successfully');
     }
 
     /**
