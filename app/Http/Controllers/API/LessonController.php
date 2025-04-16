@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class LessonController extends BaseController
 {
@@ -213,7 +214,7 @@ class LessonController extends BaseController
     public function updateLessonVideo(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'video' => 'required|mimes:mp4,mov,avi,wmv|max:102400',
+            'video' => 'required|mimes:mp4,mov,avi,wmv',
         ]);
 
         if ($validator->fails()) {
