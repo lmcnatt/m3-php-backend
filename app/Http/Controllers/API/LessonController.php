@@ -85,7 +85,6 @@ class LessonController extends BaseController
             'notes' => 'nullable',
             'dance_id' => 'required',
             'lesson_date' => 'required',
-            'video' => 'nullable|mimes:mp4,mov,avi,wmv|max:102400',
         ]);
 
         if ($validator->fails()) {
@@ -183,7 +182,6 @@ class LessonController extends BaseController
             'notes' => 'nullable',
             'dance_id' => 'required',
             'lesson_date' => 'required',
-            'video' => 'nullable|mimes:mp4,mov,avi,wmv|max:102400',
         ]);
 
         if ($validator->fails()) {
